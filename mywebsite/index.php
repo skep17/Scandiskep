@@ -7,6 +7,8 @@
   $myQ->execute();
   $products = $myQ->fetchAll(PDO::FETCH_ASSOC);
 
+  $checkboxes = [];
+
 ?>
 
 <!doctype html>
@@ -22,9 +24,10 @@
     <title>Products page</title>
   </head>
   <body>
+  <form method="post">
     <h1>Products page</h1>
     <a href="addpr.php" type="button" class="btn btn-outline-success" style="float: right ; margin: 5px">Add New Product</a>
-    <button type="button" class="btn btn-outline-danger" style="float: right ; margin: 5px">Delete Selected Products</button>
+    <button type="submit" name="Delete" class="btn btn-outline-danger" style="float: right ; margin: 5px">Delete Selected Products</button>
     <table class="table table-dark table-hover">
   <thead>
     <tr>
@@ -45,13 +48,23 @@
           <td><?php echo $item['Price']." $" ?></td>
           <td><?php echo $item['Attribute'] ?></td>
           <td>
-              <div class="form-check">
-                  <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-              </div>
+              <input type="checkbox" name="cleaner[]" value="<?php echo $item['SKU'] ?>" id="flexCheckDefault">
           </td>
       </tr>
   <?php } ?>
   </tbody>
 </table>
+      <?php
+      if(isset($_POST['Delete'])){
+          if(isset($_POST['cleaner'])){
+              foreach ($_POST['cleaner'] as $delitem){
+                  $delQ = $pdo->prepare("DELETE FROM products WHERE SKU = '$delitem'");
+                  $delQ->execute();
+              }
+              header('Location: index.php');
+          }
+      }
+      ?>
+  </form>
   </body>
 </html>
